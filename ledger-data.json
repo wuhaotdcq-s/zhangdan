@@ -1,0 +1,184 @@
+{
+  "version": "1.2.0",
+  "exportedAt": "2026-06-24T08:24:52.544Z",
+  "transactions": [],
+  "categories": [
+    {
+      "id": "cat-exp-1",
+      "name": "餐饮",
+      "icon": "utensils",
+      "type": "expense",
+      "subcategories": [
+        "早餐",
+        "午餐",
+        "晚餐",
+        "水果",
+        "零食",
+        "咖啡饮品"
+      ]
+    },
+    {
+      "id": "cat-exp-2",
+      "name": "交通",
+      "icon": "bus",
+      "type": "expense",
+      "subcategories": [
+        "公交地铁",
+        "打车",
+        "加油",
+        "停车",
+        "火车飞机",
+        "维修保养"
+      ]
+    },
+    {
+      "id": "cat-exp-3",
+      "name": "购物",
+      "icon": "shopping-bag",
+      "type": "expense",
+      "subcategories": [
+        "服装",
+        "数码",
+        "家居",
+        "日用",
+        "美妆"
+      ]
+    },
+    {
+      "id": "cat-exp-4",
+      "name": "住房",
+      "icon": "home",
+      "type": "expense",
+      "subcategories": [
+        "房租",
+        "房贷",
+        "水电气",
+        "物业",
+        "维修"
+      ]
+    },
+    {
+      "id": "cat-exp-5",
+      "name": "娱乐",
+      "icon": "gamepad",
+      "type": "expense",
+      "subcategories": [
+        "电影",
+        "游戏",
+        "旅游",
+        "运动",
+        "KTV"
+      ]
+    },
+    {
+      "id": "cat-exp-6",
+      "name": "医疗",
+      "icon": "medkit",
+      "type": "expense",
+      "subcategories": [
+        "看病",
+        "药品",
+        "体检",
+        "保险"
+      ]
+    },
+    {
+      "id": "cat-exp-7",
+      "name": "通讯",
+      "icon": "phone",
+      "type": "expense",
+      "subcategories": [
+        "话费",
+        "网费"
+      ]
+    },
+    {
+      "id": "cat-exp-8",
+      "name": "教育",
+      "icon": "book",
+      "type": "expense",
+      "subcategories": [
+        "课程",
+        "书籍",
+        "文具"
+      ]
+    },
+    {
+      "id": "cat-exp-9",
+      "name": "人情",
+      "icon": "gift",
+      "type": "expense",
+      "subcategories": [
+        "红包",
+        "请客",
+        "礼物",
+        "份子钱"
+      ]
+    },
+    {
+      "id": "cat-exp-10",
+      "name": "其他",
+      "icon": "ellipsis-h",
+      "type": "expense",
+      "subcategories": []
+    },
+    {
+      "id": "cat-inc-1",
+      "name": "工资",
+      "icon": "briefcase",
+      "type": "income",
+      "subcategories": [
+        "基本工资",
+        "绩效",
+        "津贴"
+      ]
+    },
+    {
+      "id": "cat-inc-2",
+      "name": "奖金",
+      "icon": "award",
+      "type": "income",
+      "subcategories": [
+        "年终奖",
+        "季度奖",
+        "项目奖"
+      ]
+    },
+    {
+      "id": "cat-inc-3",
+      "name": "理财收益",
+      "icon": "chart-line",
+      "type": "income",
+      "subcategories": [
+        "基金",
+        "股票",
+        "利息"
+      ]
+    },
+    {
+      "id": "cat-inc-4",
+      "name": "兼职",
+      "icon": "laptop",
+      "type": "income",
+      "subcategories": []
+    },
+    {
+      "id": "cat-inc-5",
+      "name": "红包收入",
+      "icon": "gift",
+      "type": "income",
+      "subcategories": []
+    },
+    {
+      "id": "cat-inc-6",
+      "name": "其他",
+      "icon": "ellipsis-h",
+      "type": "income",
+      "subcategories": []
+    }
+  ],
+  "budgets": {},
+  "settings": {
+    "darkMode": false
+  }
+}
