@@ -579,28 +579,37 @@ body.dark .transaction-item:hover{background:rgba(255,255,255,.03)}
   </div>
   <div class="settings-section" id="sync-section">
     <h3>同步与备份</h3>
-    <!-- GitHub Gist Sync (CORS-friendly, automatic) -->
+    <!-- GitHub Repo File Sync (CORS-friendly, automatic) -->
     <div class="card" style="box-shadow:none;padding:0 0 12px 0;margin-bottom:12px;border-bottom:1px solid var(--border);border-radius:0">
-      <div class="card-title" style="margin-bottom:12px"><i class="fab fa-github"></i> GitHub Gist 自动同步</div>
+      <div class="card-title" style="margin-bottom:12px"><i class="fab fa-github"></i> GitHub 仓库同步</div>
       <p style="font-size:.8rem;color:var(--text-secondary);margin-bottom:12px;">
         <i class="fas fa-check-circle" style="color:var(--success)"></i>
         GitHub API 支持跨域，实现真正自动同步。<br>
-        数据存储在您的 GitHub Gist 中，多台设备自动同步。
+        数据存储在您仓库的 <code>ledger-data.json</code> 文件中，多台设备自动同步。
       </p>
       <div class="sync-config-group">
-        <label>GitHub 个人访问令牌 (PAT)</label>
-        <input type="password" class="form-input" id="gist-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-        <div class="hint"><a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a>，勾选 <strong>gist</strong> 权限后创建。令牌仅存储本地浏览器。</div>
+        <label>GitHub Token</label>
+        <input type="password" class="form-input" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div class="hint"><a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a>，勾选 <strong>repo</strong> 权限后创建。</div>
+      </div>
+      <div class="sync-config-group">
+        <label>仓库地址 (owner/repo)</label>
+        <input type="text" class="form-input" id="gh-repo" placeholder="你的用户名/仓库名">
+        <div class="hint">上传 index.html 的仓库地址，如 wuhaotdcq-s/jizhang</div>
+      </div>
+      <div class="sync-config-group">
+        <label>分支</label>
+        <input type="text" class="form-input" id="gh-branch" value="main" placeholder="main">
       </div>
       <div class="setting-item" style="padding:8px 0">
-        <div class="si-left"><div><div class="si-label">自动同步</div><div class="si-desc">每次记账后自动推送到 Gist</div></div></div>
-        <button class="toggle-switch" id="gist-auto-toggle" onclick="toggleGistAutoSync()"></button>
+        <div class="si-left"><div><div class="si-label">自动同步</div><div class="si-desc">每次记账后自动同步到仓库</div></div></div>
+        <button class="toggle-switch" id="gh-auto-toggle" onclick="toggleGhAutoSync()"></button>
       </div>
       <div class="sync-btn-group">
-        <button class="btn btn-sm btn-primary" onclick="gistSyncPush()"><i class="fas fa-upload"></i> 推送数据</button>
-        <button class="btn btn-sm btn-outline" onclick="gistSyncPull()"><i class="fas fa-download"></i> 拉取数据</button>
+        <button class="btn btn-sm btn-primary" onclick="ghSyncPush()"><i class="fas fa-upload"></i> 同步到仓库</button>
+        <button class="btn btn-sm btn-outline" onclick="ghSyncPull()"><i class="fas fa-download"></i> 从仓库拉取</button>
       </div>
-      <div id="gist-status" style="margin-top:8px;font-size:.8rem;color:var(--text-light);text-align:center">未配置</div>
+      <div id="gh-status" style="margin-top:8px;font-size:.8rem;color:var(--text-light);text-align:center">未配置</div>
     </div>
     <!-- QR Sync (keep as fallback) -->
     <div class="card" style="box-shadow:none;padding:0;border-radius:0">
@@ -661,13 +670,13 @@ body.dark .transaction-item:hover{background:rgba(255,255,255,.03)}
     </ol>
   </div>
   <div class="card">
-    <div class="card-title"><i class="fab fa-github"></i> Gist 自动同步配置</div>
+    <div class="card-title"><i class="fab fa-github"></i> GitHub 仓库同步配置</div>
     <ol style="font-size:.85rem;color:var(--text-secondary);line-height:1.8;padding-left:20px">
       <li>去 <a href="https://github.com/settings/tokens" target="_blank">GitHub Tokens</a> → Generate new token (classic)</li>
-      <li>只勾选 <strong>gist</strong> 权限，生成令牌</li>
-      <li>在"我的 → 同步与备份"中粘贴令牌，开启自动同步</li>
-      <li>首次点"推送数据"，自动创建私有 Gist</li>
-      <li>另一设备配相同令牌，点"拉取数据"即可同步</li>
+      <li>勾选 <strong>repo</strong> 权限，生成令牌</li>
+      <li>在"我的 → 同步与备份"中填入 Token 和仓库地址（格式：用户名/仓库名）</li>
+      <li>点击"同步到仓库"，数据将保存为仓库中的 <code>ledger-data.json</code></li>
+      <li>另一设备配相同 Token 和仓库地址，点"从仓库拉取"即可同步</li>
     </ol>
   </div>
   <div class="card">
@@ -700,7 +709,7 @@ body.dark .transaction-item:hover{background:rgba(255,255,255,.03)}
       <li>所有数据存储在浏览器 localStorage 中</li>
       <li>更新 HTML 文件不会丢失数据</li>
       <li>建议定期在数据管理中导出备份</li>
-      <li>Gist 同步数据存在 GitHub 私有 Gist 中</li>
+      <li>仓库同步数据存在 GitHub 仓库的 <code>ledger-data.json</code> 文件中</li>
     </ul>
   </div>
   <div class="app-footer">
@@ -1486,10 +1495,12 @@ function refreshAll(){
 // --- Sync Config ---
 function getSyncConfig(){
   return loadData(STORAGE_KEYS.syncConfig, {
-    gistToken: '',
-    gistId: '',
+    ghToken: '',
+    ghRepo: '',
+    ghBranch: 'main',
     autoSync: false,
-    lastSyncTime: null
+    lastSyncTime: null,
+    sha: ''
   });
 }
 function setSyncConfig(d){
@@ -1498,15 +1509,17 @@ function setSyncConfig(d){
 
 function loadSyncConfig(){
   const cfg = getSyncConfig();
-  document.getElementById('gist-token').value = cfg.gistToken || '';
-  document.getElementById('gist-auto-toggle').classList.toggle('active', !!cfg.autoSync);
-  const statusEl = document.getElementById('gist-status');
-  if (cfg.gistId && cfg.lastSyncTime) {
-    statusEl.textContent = '已同步 | Gist ID: ' + cfg.gistId.slice(0,8) + '... | ' + formatSyncTime(cfg.lastSyncTime);
-  } else if (cfg.gistId) {
-    statusEl.textContent = 'Gist ID: ' + cfg.gistId.slice(0,8) + '... | 等待同步';
-  } else if (cfg.gistToken) {
-    statusEl.textContent = 'Token 已配置，点击推送创建 Gist';
+  document.getElementById('gh-token').value = cfg.ghToken || '';
+  document.getElementById('gh-repo').value = cfg.ghRepo || '';
+  document.getElementById('gh-branch').value = cfg.ghBranch || 'main';
+  document.getElementById('gh-auto-toggle').classList.toggle('active', !!cfg.autoSync);
+  const statusEl = document.getElementById('gh-status');
+  if (cfg.ghToken && cfg.ghRepo && cfg.lastSyncTime) {
+    statusEl.textContent = '已同步 | ' + cfg.ghRepo + ' | ' + formatSyncTime(cfg.lastSyncTime);
+  } else if (cfg.ghToken && cfg.ghRepo) {
+    statusEl.textContent = cfg.ghRepo + ' | 等待同步';
+  } else if (cfg.ghToken || cfg.ghRepo) {
+    statusEl.textContent = '配置不完整';
   } else {
     statusEl.textContent = '未配置';
   }
@@ -1515,7 +1528,9 @@ function loadSyncConfig(){
 
 function saveSyncConfigFromUI(){
   const cfg = getSyncConfig();
-  cfg.gistToken = document.getElementById('gist-token').value.trim();
+  cfg.ghToken = document.getElementById('gh-token').value.trim();
+  cfg.ghRepo = document.getElementById('gh-repo').value.trim();
+  cfg.ghBranch = document.getElementById('gh-branch').value.trim() || 'main';
   setSyncConfig(cfg);
   return cfg;
 }
@@ -1541,46 +1556,51 @@ function buildSyncPayload(){
   };
 }
 
-// --- GitHub Gist Sync (CORS-friendly, automatic) ---
+// --- GitHub Repo File Sync (CORS-friendly, automatic) ---
 
-// Push data to Gist
-async function gistSyncPush(){
+// Push data to repo
+async function ghSyncPush(){
   const cfg = saveSyncConfigFromUI();
-  if(!cfg.gistToken){ showToast('请先填写 GitHub Token','error'); return; }
+  if(!cfg.ghToken || !cfg.ghRepo){ showToast('请填写 Token 和仓库地址','error'); return; }
   setSyncIndicatorState('syncing');
   try {
     const payload = buildSyncPayload();
-    const content = JSON.stringify(payload, null, 2);
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    const path = 'ledger-data.json';
+    const url = `https://api.github.com/repos/${cfg.ghRepo}/contents/${path}`;
 
-    let gistId = cfg.gistId;
-
-    if(!gistId){
-      // Create a new gist
-      const res = await fetch('https://api.github.com/gists', {
-        method: 'POST',
-        headers: {'Authorization': 'Bearer ' + cfg.gistToken, 'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          description: '个人记账软件同步数据',
-          public: false,
-          files: {'ledger-data.json': {content: content}}
-        })
+    let sha = cfg.sha;
+    // If we don't have sha, try to get it (file might exist)
+    if (!sha) {
+      const getRes = await fetch(url, {
+        headers: {'Authorization': 'Bearer ' + cfg.ghToken}
       });
-      if(!res.ok) throw new Error('创建 Gist 失败: HTTP ' + res.status);
-      const data = await res.json();
-      gistId = data.id;
-      cfg.gistId = gistId;
-    } else {
-      // Update existing gist
-      const res = await fetch('https://api.github.com/gists/' + gistId, {
-        method: 'PATCH',
-        headers: {'Authorization': 'Bearer ' + cfg.gistToken, 'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          files: {'ledger-data.json': {content: content}}
-        })
-      });
-      if(!res.ok) throw new Error('更新 Gist 失败: HTTP ' + res.status);
+      if (getRes.ok) {
+        const existing = await getRes.json();
+        sha = existing.sha;
+        cfg.sha = sha;
+      }
     }
 
+    const body = {
+      message: '更新记账数据',
+      content: content,
+      branch: cfg.ghBranch || 'main'
+    };
+    if (sha) body.sha = sha;
+
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + cfg.ghToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const result = await res.json();
+    cfg.sha = result.content ? result.content.sha : (sha || '');
     cfg.lastSyncTime = new Date().toISOString();
     setSyncConfig(cfg);
     loadSyncConfig();
@@ -1592,52 +1612,62 @@ async function gistSyncPush(){
   }
 }
 
-// Pull data from Gist
-async function gistSyncPull(){
+// Pull data from repo
+async function ghSyncPull(){
   const cfg = saveSyncConfigFromUI();
-  if(!cfg.gistToken || !cfg.gistId){ showToast('请先推送一次数据以创建 Gist','error'); return; }
+  if(!cfg.ghToken || !cfg.ghRepo){ showToast('请填写 Token 和仓库地址','error'); return; }
   setSyncIndicatorState('syncing');
   try {
-    const res = await fetch('https://api.github.com/gists/' + cfg.gistId, {
-      headers: {'Authorization': 'Bearer ' + cfg.gistToken}
-    });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const raw = data.files && data.files['ledger-data.json'] && data.files['ledger-data.json'].content;
-    if(!raw) throw new Error('未找到同步数据');
-    const remote = JSON.parse(raw);
-    if(!remote.transactions || !Array.isArray(remote.transactions)) throw new Error('数据格式无效');
+    // Use raw.githubusercontent.com for faster reads (no API limit)
+    const rawUrl = `https://raw.githubusercontent.com/${cfg.ghRepo}/${cfg.ghBranch || 'main'}/ledger-data.json`;
+    const res = await fetch(rawUrl);
+    if (!res.ok) throw new Error('未找到云端数据，请先在另一台设备上同步');
+    const remote = await res.json();
+    if (!remote.transactions || !Array.isArray(remote.transactions)) throw new Error('数据格式无效');
 
+    // Also get the sha from API for future updates
+    const apiUrl = `https://api.github.com/repos/${cfg.ghRepo}/contents/ledger-data.json`;
+    const apiRes = await fetch(apiUrl, {
+      headers: {'Authorization': 'Bearer ' + cfg.ghToken}
+    });
+    if (apiRes.ok) {
+      const apiData = await apiRes.json();
+      cfg.sha = apiData.sha;
+      setSyncConfig(cfg);
+    }
+
+    // Show merge dialog
     showModal({
       title: '拉取云端数据',
-      content: '<p style="color:var(--text-secondary);margin-bottom:12px">从云端获取到 ' + remote.transactions.length + ' 条交易记录。</p><p style="font-size:.85rem;color:var(--text-secondary)">请选择导入方式:</p>',
+      content: '<p style="color:var(--text-secondary);margin-bottom:12px">从仓库获取到 ' + remote.transactions.length + ' 条交易记录。</p><p style="font-size:.85rem;color:var(--text-secondary)">请选择导入方式:</p>',
       buttons: [
         {label: '取消', action: 'cancel', class: 'btn-outline'},
-        {label: '覆盖本地', action: 'overwrite', class: 'btn-primary'},
-        {label: '合并', action: 'merge', class: 'btn-outline'}
+        {label: '智能合并（推荐）', action: 'merge', class: 'btn-primary'},
+        {label: '完全覆盖本地', action: 'overwrite', class: 'btn-outline'}
       ],
       callbacks:{
         cancel:()=>{setSyncIndicatorState('error')},
         overwrite:()=>{
           if(remote.transactions) setTransactions(remote.transactions);
           if(remote.categories) setCategories(remote.categories);
+          if(remote.budgets) setBudgets(remote.budgets);
           cfg.lastSyncTime = new Date().toISOString();
           setSyncConfig(cfg); loadSyncConfig();
           setSyncIndicatorState('synced');
           showToast('已覆盖本地数据','success');
           refreshAll();
         },
-                merge:()=>{
-          const curTxs = getTransactions();
-          const ids = new Set(curTxs.map(t=>t.id));
-          const keys = new Set(curTxs.map(t=>t.date+t.amount+(t.categoryId||'')+(t.note||'')));
+        merge:()=>{
+          let localTxs = getTransactions();
+          const ids = new Set(localTxs.map(t=>t.id));
+          const keys = new Set(localTxs.map(t=>t.date+t.amount+(t.categoryId||'')+(t.note||'')));
           let added = 0;
           if(remote.transactions){
             remote.transactions.forEach(t=>{
               const k = t.date+(t.amount||0)+(t.categoryId||'')+(t.note||'');
-              if(!ids.has(t.id) && !keys.has(k)){curTxs.push(t); ids.add(t.id); keys.add(k); added++;}
+              if(!ids.has(t.id) && !keys.has(k)){localTxs.push(t); ids.add(t.id); keys.add(k); added++;}
             });
-            setTransactions(curTxs);
+            setTransactions(localTxs);
           }
           if(remote.categories){
             const cc = getCategories();
@@ -1659,27 +1689,46 @@ async function gistSyncPull(){
   }
 }
 
+// Toggle auto sync
+function toggleGhAutoSync(){
+  const cfg = getSyncConfig();
+  cfg.autoSync = !cfg.autoSync;
+  setSyncConfig(cfg);
+  loadSyncConfig();
+  if(cfg.autoSync) showToast('自动同步已开启','success');
+  else showToast('自动同步已关闭','info');
+}
+
 // --- Auto Sync ---
 function triggerAutoSync(){
   const cfg = getSyncConfig();
-  if(!cfg.autoSync || !cfg.gistToken) return;
+  if(!cfg.autoSync || !cfg.ghToken || !cfg.ghRepo) return;
   setSyncIndicatorState('syncing');
   const payload = buildSyncPayload();
-  const content = JSON.stringify(payload, null, 2);
-  if(cfg.gistId){
-    fetch('https://api.github.com/gists/' + cfg.gistId, {
-      method: 'PATCH',
-      headers: {'Authorization': 'Bearer ' + cfg.gistToken, 'Content-Type': 'application/json'},
-      body: JSON.stringify({files: {'ledger-data.json': {content: content}}})
-    }).then(r => {
-      if(r.ok){
-        cfg.lastSyncTime = new Date().toISOString();
-        setSyncConfig(cfg);
-        setSyncIndicatorState('synced');
-        updateSyncIndicators();
-      } else { setSyncIndicatorState('error'); }
-    }).catch(() => { setSyncIndicatorState('error'); });
-  }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const path = 'ledger-data.json';
+  const url = `https://api.github.com/repos/${cfg.ghRepo}/contents/${path}`;
+  const body = {
+    message: '自动同步记账数据',
+    content: content,
+    branch: cfg.ghBranch || 'main'
+  };
+  if (cfg.sha) body.sha = cfg.sha;
+  fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer ' + cfg.ghToken,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }).then(r => {
+    if (r.ok) {
+      cfg.lastSyncTime = new Date().toISOString();
+      setSyncConfig(cfg);
+      setSyncIndicatorState('synced');
+      updateSyncIndicators();
+    } else { setSyncIndicatorState('error'); }
+  }).catch(() => { setSyncIndicatorState('error'); });
 }
 
 // --- Sync Indicators ---
@@ -1701,7 +1750,7 @@ function setSyncIndicatorState(state){
 
 function updateSyncIndicators(){
   const cfg = getSyncConfig();
-  if(cfg.autoSync && cfg.gistToken){
+  if(cfg.autoSync && cfg.ghToken && cfg.ghRepo){
     if(cfg.lastSyncTime){ setSyncIndicatorState('synced');
     } else { setSyncIndicatorState('disabled');
       document.getElementById('home-sync-label').textContent = '已配置，等待首次同步'; }
@@ -1929,5 +1978,15 @@ function initApp(){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 document.addEventListener('DOMContentLoaded',initApp);
 </script>
+</body>
+</html>
+  const n=new Date();listYear=n.getFullYear();listMonth=n.getMonth()+1;
+  document.getElementById('list-month-label').textContent=listYear+'年'+listMonth+'月';
+  if(!getTransactions().length)setTimeout(()=>showToast('欢迎使用！点击记一笔添加第一笔交易','info',4000),500);
+  refreshDashboard();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('DOMContentLoaded',initApp);
+
 </body>
 </html>
