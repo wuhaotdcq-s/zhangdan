@@ -1,6 +1,6 @@
 {
   "version": "1.2.0",
-  "exportedAt": "2026-06-25T07:27:06.089Z",
+  "exportedAt": "2026-06-29T04:10:18.005Z",
   "transactions": [
     {
       "id": "mqrqzh66nu92tirsx",
@@ -52,6 +52,23 @@
       "reimbAccount": "",
       "reimbursed": false,
       "createdAt": "2026-06-25T07:27:02.601Z"
+    },
+    {
+      "id": "mqyp8wx6td16oa4tx",
+      "amount": 5,
+      "categoryId": "cat-exp-1",
+      "categoryName": "餐饮",
+      "categoryIcon": "utensils",
+      "type": "expense",
+      "date": "2026-06-29",
+      "time": "09:09",
+      "subcategory": "早餐",
+      "note": "",
+      "payment": "微信支付",
+      "reimbursable": false,
+      "reimbAccount": "",
+      "reimbursed": false,
+      "createdAt": "2026-06-29T04:10:07.147Z"
     }
   ],
   "categories": [
@@ -231,6 +248,6 @@
   ],
   "budgets": {},
   "settings": {
-    "darkMode": true
+    "darkMode": false
   }
 }
