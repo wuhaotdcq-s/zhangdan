@@ -1569,18 +1569,16 @@ async function ghSyncPush(){
     const path = 'ledger-data.json';
     const url = `https://api.github.com/repos/${cfg.ghRepo}/contents/${path}`;
 
-    let sha = cfg.sha;
-    // If we don't have sha, try to get it (file might exist)
-    if (!sha) {
-      const getRes = await fetch(url, {
-        headers: {'Authorization': 'Bearer ' + cfg.ghToken}
-      });
-      if (getRes.ok) {
-        const existing = await getRes.json();
-        sha = existing.sha;
-        cfg.sha = sha;
-      }
+    // Always try to get the latest sha first (handles conflicts)
+    let sha = '';
+    const getRes = await fetch(url, {
+      headers: {'Authorization': 'Bearer ' + cfg.ghToken}
+    });
+    if (getRes.ok) {
+      const existing = await getRes.json();
+      sha = existing.sha;
     }
+    cfg.sha = sha;
 
     const body = {
       message: '更新记账数据',
@@ -1598,9 +1596,38 @@ async function ghSyncPush(){
       body: JSON.stringify(body)
     });
 
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const result = await res.json();
-    cfg.sha = result.content ? result.content.sha : (sha || '');
+    if (!res.ok) {
+      const errData = await res.text();
+      // If sha conflict, retry with fresh sha
+      if (res.status === 409) {
+        const retryRes = await fetch(url, {
+          headers: {'Authorization': 'Bearer ' + cfg.ghToken}
+        });
+        if (retryRes.ok) {
+          const retryData = await retryRes.json();
+          body.sha = retryData.sha;
+          cfg.sha = retryData.sha;
+          const retryPut = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'Bearer ' + cfg.ghToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          });
+          if (!retryPut.ok) throw new Error('HTTP ' + retryPut.status);
+          const result = await retryPut.json();
+          cfg.sha = result.content ? result.content.sha : (retryData.sha || '');
+        } else {
+          throw new Error('文件冲突，请手动刷新后重试');
+        }
+      } else {
+        throw new Error('HTTP ' + res.status + ': ' + errData.slice(0, 100));
+      }
+    } else {
+      const result = await res.json();
+      cfg.sha = result.content ? result.content.sha : (sha || '');
+    }
     cfg.lastSyncTime = new Date().toISOString();
     setSyncConfig(cfg);
     loadSyncConfig();
@@ -1618,23 +1645,19 @@ async function ghSyncPull(){
   if(!cfg.ghToken || !cfg.ghRepo){ showToast('请填写 Token 和仓库地址','error'); return; }
   setSyncIndicatorState('syncing');
   try {
-    // Use raw.githubusercontent.com for faster reads (no API limit)
-    const rawUrl = `https://raw.githubusercontent.com/${cfg.ghRepo}/${cfg.ghBranch || 'main'}/ledger-data.json`;
-    const res = await fetch(rawUrl);
-    if (!res.ok) throw new Error('未找到云端数据，请先在另一台设备上同步');
-    const remote = await res.json();
-    if (!remote.transactions || !Array.isArray(remote.transactions)) throw new Error('数据格式无效');
-
-    // Also get the sha from API for future updates
-    const apiUrl = `https://api.github.com/repos/${cfg.ghRepo}/contents/ledger-data.json`;
+    const apiUrl = `https://api.github.com/repos/${cfg.ghRepo}/contents/ledger-data.json?ref=${cfg.ghBranch || 'main'}`;
     const apiRes = await fetch(apiUrl, {
       headers: {'Authorization': 'Bearer ' + cfg.ghToken}
     });
-    if (apiRes.ok) {
-      const apiData = await apiRes.json();
-      cfg.sha = apiData.sha;
-      setSyncConfig(cfg);
-    }
+    if (!apiRes.ok) throw new Error('未找到云端数据，请先在另一台设备上同步');
+    const apiData = await apiRes.json();
+    cfg.sha = apiData.sha;
+    setSyncConfig(cfg);
+
+    const raw = atob(apiData.content.replace(/\n/g, ''));
+    const decoded = decodeURIComponent(escape(raw));
+    const remote = JSON.parse(decoded);
+    if (!remote.transactions || !Array.isArray(remote.transactions)) throw new Error('数据格式无效');
 
     // Show merge dialog
     showModal({
@@ -1964,19 +1987,7 @@ function confirmClearAll(){
   showModal({title:'清除所有数据',content:'<p style="color:var(--expense);font-weight:500;margin-bottom:8px">将删除所有交易、分类和预算数据！</p><p style="color:var(--text-secondary);font-size:.9rem">建议先导出备份，此操作不可撤销。</p>',buttons:[{label:'取消',action:'cancel',class:'btn-outline'},{label:'确认清除',action:'clear',class:'btn-danger'}],callbacks:{cancel:()=>{},clear:()=>{Object.values(STORAGE_KEYS).forEach(k=>localStorage.removeItem(k));setCategories([...EXPENSE_CATS_DEFAULT,...INCOME_CATS_DEFAULT]);setBudgets({});showToast('已清除所有数据','success');refreshDataPage();refreshDashboard();if(currentPage!=='page-data')switchPage('page-home')}}});
 }
 
-// Init
-function initApp(){
-  if(!localStorage.getItem(STORAGE_KEYS.categories))setCategories([...EXPENSE_CATS_DEFAULT,...INCOME_CATS_DEFAULT]);
-  if(!localStorage.getItem(STORAGE_KEYS.budgets))setBudgets({});
-  if(!localStorage.getItem(STORAGE_KEYS.settings))setSettings({darkMode:false});
-  initDarkMode();initAddPage();loadSyncConfig();
-  const n=new Date();listYear=n.getFullYear();listMonth=n.getMonth()+1;
-  document.getElementById('list-month-label').textContent=listYear+'年'+listMonth+'月';
-  if(!getTransactions().length)setTimeout(()=>showToast('欢迎使用！点击记一笔添加第一笔交易','info',4000),500);
-  refreshDashboard();
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-document.addEventListener('DOMContentLoaded',initApp);
+// I
 </script>
 </body>
 </html>
