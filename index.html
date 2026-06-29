@@ -440,7 +440,7 @@ body.dark .transaction-item:hover{background:rgba(255,255,255,.03)}
       <i class="fas fa-cloud"></i>
       <span class="sync-indicator disabled" id="sync-dot-header"></span>
     </button>
-    <button class="header-btn" id="dark-toggle" title="切换暗色模式"><i class="fas fa-moon"></i></button>
+    <button class="header-btn" id="dark-toggle" onclick="toggleDarkMode()" title="切换暗色模式"><i class="fas fa-moon"></i></button>
     <button class="header-btn" onclick="switchPage('page-data')" title="数据管理"><i class="fas fa-database"></i></button>
   </div>
 </header>
@@ -1978,15 +1978,5 @@ function initApp(){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 document.addEventListener('DOMContentLoaded',initApp);
 </script>
-</body>
-</html>
-  const n=new Date();listYear=n.getFullYear();listMonth=n.getMonth()+1;
-  document.getElementById('list-month-label').textContent=listYear+'年'+listMonth+'月';
-  if(!getTransactions().length)setTimeout(()=>showToast('欢迎使用！点击记一笔添加第一笔交易','info',4000),500);
-  refreshDashboard();
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-document.addEventListener('DOMContentLoaded',initApp);
-
 </body>
 </html>
