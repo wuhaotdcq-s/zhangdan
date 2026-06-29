@@ -1,6 +1,6 @@
 {
   "version": "1.2.0",
-  "exportedAt": "2026-06-29T07:24:23.801Z",
+  "exportedAt": "2026-06-29T07:24:49.910Z",
   "transactions": [
     {
       "id": "mqrqzh66nu92tirsx",
@@ -103,6 +103,23 @@
       "reimbAccount": "",
       "reimbursed": false,
       "createdAt": "2026-06-29T07:24:23.789Z"
+    },
+    {
+      "id": "mqyw72g55yf4nlcjs",
+      "amount": 17.56,
+      "categoryId": "cat-exp-2",
+      "categoryName": "交通",
+      "categoryIcon": "bus",
+      "type": "expense",
+      "date": "2026-06-29",
+      "time": "08:54",
+      "subcategory": "打车",
+      "note": "",
+      "payment": "微信支付",
+      "reimbursable": false,
+      "reimbAccount": "",
+      "reimbursed": false,
+      "createdAt": "2026-06-29T07:24:38.309Z"
     }
   ],
   "categories": [
