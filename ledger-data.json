@@ -1,6 +1,6 @@
 {
   "version": "1.2.0",
-  "exportedAt": "2026-06-29T04:10:18.005Z",
+  "exportedAt": "2026-06-29T07:24:23.801Z",
   "transactions": [
     {
       "id": "mqrqzh66nu92tirsx",
@@ -54,6 +54,23 @@
       "createdAt": "2026-06-25T07:27:02.601Z"
     },
     {
+      "id": "mqyvointqq9cxntjl",
+      "amount": 23.8,
+      "categoryId": "cat-exp-1",
+      "categoryName": "餐饮",
+      "categoryIcon": "utensils",
+      "type": "expense",
+      "date": "2026-06-29",
+      "time": "12:10",
+      "subcategory": "午餐",
+      "note": "",
+      "payment": "微信支付",
+      "reimbursable": false,
+      "reimbAccount": "",
+      "reimbursed": false,
+      "createdAt": "2026-06-29T07:10:12.857Z"
+    },
+    {
       "id": "mqyp8wx6td16oa4tx",
       "amount": 5,
       "categoryId": "cat-exp-1",
@@ -69,6 +86,23 @@
       "reimbAccount": "",
       "reimbursed": false,
       "createdAt": "2026-06-29T04:10:07.147Z"
+    },
+    {
+      "id": "mqyw6r8t7qxl0af51",
+      "amount": 29.8,
+      "categoryId": "cat-exp-5",
+      "categoryName": "娱乐",
+      "categoryIcon": "gamepad",
+      "type": "expense",
+      "date": "2026-06-29",
+      "time": "15:23",
+      "subcategory": "电影",
+      "note": "",
+      "payment": "微信支付",
+      "reimbursable": false,
+      "reimbAccount": "",
+      "reimbursed": false,
+      "createdAt": "2026-06-29T07:24:23.789Z"
     }
   ],
   "categories": [
